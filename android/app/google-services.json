@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "602536565162",
+    "firebase_url": "https://musicapp-890ef-default-rtdb.firebaseio.com",
+    "project_id": "musicapp-890ef",
+    "storage_bucket": "musicapp-890ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602536565162:android:5dbb95ecd5a95bb220b3d3",
+        "android_client_info": {
+          "package_name": "com.musicapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "602536565162-he5v62ojaih51jea0qr3fhj9uo6p0c7q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH_RB5jSxzOR4879ZMnHazUrgcKGrHgPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "602536565162-he5v62ojaih51jea0qr3fhj9uo6p0c7q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602536565162:android:c7dd9b56123ccb6820b3d3",
+        "android_client_info": {
+          "package_name": "com.uniq.musicapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "602536565162-uiblhvli3bif3n0mqtc5ijm33g950qej.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.uniq.musicapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "602536565162-he5v62ojaih51jea0qr3fhj9uo6p0c7q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH_RB5jSxzOR4879ZMnHazUrgcKGrHgPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "602536565162-he5v62ojaih51jea0qr3fhj9uo6p0c7q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
