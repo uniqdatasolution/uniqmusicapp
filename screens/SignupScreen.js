@@ -3,8 +3,6 @@ import { Dimensions, StyleSheet, Platform, PixelRatio, View, Image, TouchableOpa
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 // import CheckBox from '@react-native-community/checkbox';
 import { actuatedNormalizeH, scaleW, actuatedNormalizeW, scaleH, width, height } from '../screens/assets/layout/Dimension'
-import { RadioButton, } from 'react-native-paper';
-import { CheckBox } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import { WToast } from "react-native-smart-tip";
 import Firebase from "react-native-firebase";
@@ -15,7 +13,8 @@ import {
     GoogleSignin,
     GoogleSigninButton,
     statusCodes,
-  } from "@react-native-community/google-signin";
+} from "@react-native-community/google-signin";
+import { AuthContext } from '../Components/Context';
 const SignupScreen = ({ navigation }) => {
     const [email, setEmail] = React.useState('');
     const [pass, setPass] = React.useState("");
@@ -23,6 +22,7 @@ const SignupScreen = ({ navigation }) => {
     const [username, setUsername] = React.useState("");
     const [disabled, setdisabled] = useState(false)
     const [isLoading, setisLoading] = useState(false);
+    const { validation } = React.useContext(AuthContext);
     const handleChangeemail = (text) => {
         setEmail(text);
     };
@@ -42,9 +42,9 @@ const SignupScreen = ({ navigation }) => {
         GoogleSignin.configure({
             scopes: ['email'], // what API you want to access on behalf of the user, default is email and profile
             webClientId:
-              '602536565162-he5v62ojaih51jea0qr3fhj9uo6p0c7q.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+                '602536565162-he5v62ojaih51jea0qr3fhj9uo6p0c7q.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
             offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-          });
+        });
 
         return () => {
 
@@ -68,7 +68,7 @@ const SignupScreen = ({ navigation }) => {
             setisLoading(false)
         } else {
             await Firebase.auth()
-                .createUserWithEmailAndPassword(email, pass)
+                .createUserWithEmailAndPassword(email.trim(), pass)
                 .then((res) => {
                     const user = res.user;
                     console.log(' createUserWithEmailAndPassword authUser :: ', user);
@@ -79,6 +79,7 @@ const SignupScreen = ({ navigation }) => {
                         pass: pass,
                         gen: '0',
                         registerType: 'email',
+                       
                     });
                     const toastOpts = {
                         data: "success signup",
@@ -88,7 +89,7 @@ const SignupScreen = ({ navigation }) => {
                         duration: WToast.duration.LONG,
                         position: WToast.position.TOP,
                     };
-                    
+
                     user.sendEmailVerification().then(function () {
                         console.log("sendEmailVerification   :: ", 'sendEmailVerification');
                         WToast.show(toastOpts);
@@ -97,7 +98,7 @@ const SignupScreen = ({ navigation }) => {
                                 setdisabled(false);
                                 setisLoading(false)
                                 navigation.navigate("Signin");
-                               
+
                             });
                         });
                         // Email sent.
@@ -139,29 +140,29 @@ const SignupScreen = ({ navigation }) => {
         // {
         //   LoginManager.setLoginBehavior("web_only")
         // }
-        LoginManager.logInWithPermissions(['public_profile','email'])
-        .then((result) => {
-          console.log("result-------------------",JSON.stringify(result));
-            if (result.isCancelled) {
-            //   saveRemember(true);
-            } else {
-                AccessToken.getCurrentAccessToken().then(
-                    (data) => {
-                      console.log('data',JSON.stringify(data));  
-                      const accessToken = data.accessToken.toString();
-                      console.log("_----------------------------",accessToken)
-                   GetInformationFromToken(accessToken);
-                    }
-                )
-            }
-        })
-        .catch(error => {
-            console.log('logineroor',error);
-        })
-      }
+        LoginManager.logInWithPermissions(['public_profile', 'email'])
+            .then((result) => {
+                console.log("result-------------------", JSON.stringify(result));
+                if (result.isCancelled) {
+                    //   saveRemember(true);
+                } else {
+                    AccessToken.getCurrentAccessToken().then(
+                        (data) => {
+                            console.log('data', JSON.stringify(data));
+                            const accessToken = data.accessToken.toString();
+                            console.log("_----------------------------", accessToken)
+                            GetInformationFromToken(accessToken);
+                        }
+                    )
+                }
+            })
+            .catch(error => {
+                console.log('logineroor', error);
+            })
+    }
 
-      const GetInformationFromToken = (accessToken) => {
-        console.log("accessToken--------------------",accessToken)
+    const GetInformationFromToken = (accessToken) => {
+        console.log("accessToken--------------------", accessToken)
         const parameters = {
             fields: {
                 string: 'id, name, first_name, email, picture.type(large), quotes',
@@ -175,9 +176,9 @@ const SignupScreen = ({ navigation }) => {
                     console.log('login info has error: ' + error);
                 } else {
                     // alert(JSON.stringify(myProfileInfoResult));
-                    console.log("myProfileInfoResult",myProfileInfoResult, myProfileInfoResult.picture.url)
+                    console.log("myProfileInfoResult", myProfileInfoResult, myProfileInfoResult.picture.url)
                     var data = JSON.stringify(myProfileInfoResult)
-                    console.log("--------------",JSON.stringify(data))
+                    console.log("--------------", JSON.stringify(data))
                     // saveRemember(true);
                     // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
                     // saveCategory(true);
@@ -186,143 +187,143 @@ const SignupScreen = ({ navigation }) => {
                     // setRememberflag(false);
                     let flag = false;
                     firebaseAction.getSocialUsers((res) => {
-                      res.forEach((element) => {
-                        let item = element.val();
-              
-                        if (item.email === myProfileInfoResult.email) {
-                          flag = true;
-                          let asdas = {
-                            name: myProfileInfoResult.name,
-                            email: myProfileInfoResult.email,
-                            photo: myProfileInfoResult.picture.data.url,
-                            gen: '0',
-                          };
-                          AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
-                          flag = true;
-                          AsyncStorage.setItem("key", JSON.stringify({ keyName : element.key }));
-                        }
-                      });
-                      if (flag === true) {
-                        navigation.navigate("Init")
-                        // saveRemember(true);
-                        // saveRemember(true);
-                        // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
-                        // saveCategory(true);
-                        // setRememberflag(false);
-                      } else {
-                        firebaseAction.pushSocialSignup({
-                          name: myProfileInfoResult.name,
-                          email: myProfileInfoResult.email,
-                          pass: "",
-                          gen: '0',
-                          registerType: 'facebook',
+                        res.forEach((element) => {
+                            let item = element.val();
+
+                            if (item.email === myProfileInfoResult.email) {
+                                flag = true;
+                                let asdas = {
+                                    name: myProfileInfoResult.name,
+                                    email: myProfileInfoResult.email,
+                                    photo: myProfileInfoResult.picture.data.url,
+                                    gen: '0',
+                                };
+                                AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
+                                flag = true;
+                                AsyncStorage.setItem("key", JSON.stringify({ keyName: element.key }));
+                            }
                         });
-                        let asdas = {
-                          name: myProfileInfoResult.name,
-                          email: myProfileInfoResult.email,
-                          photo: myProfileInfoResult.picture.data.url,
-                          gen: '0',
-                          registerType: 'facebook',
-                        };
-                        AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
-                        navigation.navigate("Init")
-                        // saveRemember(true);
-                        // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
-                        // saveCategory(true);
-                        // setEmail("");
-                        // setPassword("");
-                        // setRememberflag(false);
-                      }
+                        if (flag === true) {
+                            validation(true)
+                            // saveRemember(true);
+                            // saveRemember(true);
+                            // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
+                            // saveCategory(true);
+                            // setRememberflag(false);
+                        } else {
+                            firebaseAction.pushSocialSignup({
+                                name: myProfileInfoResult.name,
+                                email: myProfileInfoResult.email,
+                                pass: "",
+                                gen: '0',
+                                registerType: 'facebook',
+                            });
+                            let asdas = {
+                                name: myProfileInfoResult.name,
+                                email: myProfileInfoResult.email,
+                                photo: myProfileInfoResult.picture.data.url,
+                                gen: '0',
+                                registerType: 'facebook',
+                            };
+                            AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
+                            validation(true)
+                            // saveRemember(true);
+                            // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
+                            // saveCategory(true);
+                            // setEmail("");
+                            // setPassword("");
+                            // setRememberflag(false);
+                        }
                     });
-                    
-                   
-                  }
+
+
+                }
             },
         );
         new GraphRequestManager().addRequest(myProfileRequest).start();
     };
 
-  // siginwith google flow--------------------------------------------------------------------------------------------------------------
+    // siginwith google flow--------------------------------------------------------------------------------------------------------------
 
-      const signinGoogle = async () => {
+    const signinGoogle = async () => {
         // try {
-            try {
-                await GoogleSignin.hasPlayServices();
-                const userInfodata = await GoogleSignin.signIn();
-                let flag = false;
-                firebaseAction.getSocialUsers((res) => {
-                  res.forEach((element) => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const userInfodata = await GoogleSignin.signIn();
+            let flag = false;
+            firebaseAction.getSocialUsers((res) => {
+                res.forEach((element) => {
                     let item = element.val();
-          
+
                     if (item.email === userInfodata.user.email) {
-                      flag = true;
-                      let asdas = {
-                        name: userInfodata.user.name,
-                        email: userInfodata.user.email,
-                        photo: userInfodata.user.photo,
-                        gen: '0',
-                        registerType: 'google',
-                      };
-                      AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
-                      flag = true;
-                      AsyncStorage.setItem("key", JSON.stringify({ keyName : element.key }));
+                        flag = true;
+                        let asdas = {
+                            name: userInfodata.user.name,
+                            email: userInfodata.user.email,
+                            photo: userInfodata.user.photo,
+                            gen: '0',
+                            registerType: 'google',
+                        };
+                        AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
+                        flag = true;
+                        AsyncStorage.setItem("key", JSON.stringify({ keyName: element.key }));
                     }
-                  });
-                  if (flag === true) {
-                    navigation.navigate("Init")
+                });
+                if (flag === true) {
+                    validation(true)
                     // saveRemember(true);
                     // saveRemember(true);
                     // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
                     // saveCategory(true);
                     // setRememberflag(false);
-                  } else {
+                } else {
                     firebaseAction.pushSocialSignup({
-                      name: userInfodata.user.name,
-                      email: userInfodata.user.email,
-                      pass: "",
-                      gen: '0',
-                      registerType: 'google',
+                        name: userInfodata.user.name,
+                        email: userInfodata.user.email,
+                        pass: "",
+                        gen: '0',
+                        registerType: 'google',
                     });
                     let asdas = {
-                      name: userInfodata.user.name,
-                      email: userInfodata.user.email,
-                      photo: userInfodata.user.photo,
-                      gen: '0',
-                      registerType: 'google',
+                        name: userInfodata.user.name,
+                        email: userInfodata.user.email,
+                        photo: userInfodata.user.photo,
+                        gen: '0',
+                        registerType: 'google',
                     };
                     AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
-                    navigation.navigate("Init")
+                    validation(true)
                     // saveRemember(true);
                     // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
                     // saveCategory(true);
                     // setEmail("");
                     // setPassword("");
                     // setRememberflag(false);
-                  }
-                });
-              } catch (error) {
-                if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                  // user cancelled the login flow
-                  // alert('Cancel');
-                  ToastAndroid.show("Cancel ", ToastAndroid.SHORT);
-                  console.log("Cnacel");
-                } else if (error.code === statusCodes.IN_PROGRESS) {
-                  // alert('Signin in progress');
-                  ToastAndroid.show("Signin in progress=_ ", ToastAndroid.SHORT);
-                  console.log("Signin in progress");
-                  // operation (f.e. sign in) is in progress already
-                } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                  //  alert('PLAY_SERVICES_NOT_AVAILABLE');
-                  ToastAndroid.show("PLAY_SERVICES_NOT_AVAILABLE", ToastAndroid.SHORT);
-                  console.log("PLAY_SERVICES_NOT_AVAILABLE");
-                  // play services not available or outdated
-                } else {
-                  console.log("else", JSON.stringify(error));
-                  ToastAndroid.show(JSON.stringify(error), ToastAndroid.SHORT);
-                  // some other error happened
                 }
-              }
-            };
+            });
+        } catch (error) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                // user cancelled the login flow
+                // alert('Cancel');
+                ToastAndroid.show("Cancel ", ToastAndroid.SHORT);
+                console.log("Cnacel");
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                // alert('Signin in progress');
+                ToastAndroid.show("Signin in progress=_ ", ToastAndroid.SHORT);
+                console.log("Signin in progress");
+                // operation (f.e. sign in) is in progress already
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                //  alert('PLAY_SERVICES_NOT_AVAILABLE');
+                ToastAndroid.show("PLAY_SERVICES_NOT_AVAILABLE", ToastAndroid.SHORT);
+                console.log("PLAY_SERVICES_NOT_AVAILABLE");
+                // play services not available or outdated
+            } else {
+                console.log("else", JSON.stringify(error));
+                ToastAndroid.show(JSON.stringify(error), ToastAndroid.SHORT);
+                // some other error happened
+            }
+        }
+    };
 
 
 
@@ -425,7 +426,7 @@ const SignupScreen = ({ navigation }) => {
                             <TouchableOpacity
                                 onPress={() => {
                                     signinFacebook();
-                                  }}>
+                                }}>
                                 <Image
                                     source={require('../screens/assets/images/facebookIcon.png')}
                                     alt="facebook"
@@ -443,7 +444,7 @@ const SignupScreen = ({ navigation }) => {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => {
-                                    props.navigation.navigate('Signinmobile');
+                                    navigation.navigate('MobileSignin');
                                 }}>
                                 <Image
                                     source={require('../screens/assets/images/mobileIcon.png')}

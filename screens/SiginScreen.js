@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Platform, PixelRatio, View, Image, TouchableOpacity, Text, TextInput, ActivityIndicator } from 'react-native';
+import { Dimensions, StyleSheet, Platform, PixelRatio, View, Image, TouchableOpacity, Text, TextInput, ActivityIndicator,ToastAndroid} from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 // import CheckBox from '@react-native-community/checkbox';
 import { actuatedNormalizeH, scaleW, actuatedNormalizeW, scaleH, width, height } from '../screens/assets/layout/Dimension'
@@ -16,9 +16,12 @@ import {
   statusCodes,
 } from "@react-native-community/google-signin";
 import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import { AuthContext } from '../Components/Context';
+
 const SiginScreen = ({ navigation }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const { validation } = React.useContext(AuthContext);
   const [signinflag, setSigninflag] = React.useState(true);
   const [isLoading, setisLoading] = useState(false);
   const handleChangeemail = (text) => {
@@ -43,6 +46,21 @@ const SiginScreen = ({ navigation }) => {
     }
   }, [email, password])
 
+  useEffect(() => {
+    console.log("useEffect", Firebase.auth().currentUser);
+
+    GoogleSignin.configure({
+        scopes: ['email'], // what API you want to access on behalf of the user, default is email and profile
+        webClientId:
+            '602536565162-he5v62ojaih51jea0qr3fhj9uo6p0c7q.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+        offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    });
+
+    return () => {
+
+    }
+}, [])
+
   const signin = async () => {
     setisLoading(true)
     await Firebase.auth()
@@ -56,6 +74,7 @@ const SiginScreen = ({ navigation }) => {
             if (res.val()) {
               console.log("email----------", authUser.uid)
               SaveData(authUser.uid, res.val())
+
 
             }
             else {
@@ -71,6 +90,7 @@ const SiginScreen = ({ navigation }) => {
               };
               WToast.show(toastOpts);
               setisLoading(false)
+
             }
 
           });
@@ -111,7 +131,7 @@ const SiginScreen = ({ navigation }) => {
     console.log("userData-------------", userData.email)
     await AsyncStorage.setItem('key', JSON.stringify(value));
     await AsyncStorage.setItem('userinfo', JSON.stringify(userData));
-    navigation.navigate("Init")
+    validation(true)
     setisLoading(false)
 
   }
@@ -137,11 +157,12 @@ const SiginScreen = ({ navigation }) => {
                   };
                   AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
                   flag = true;
+                 
                   AsyncStorage.setItem("key", JSON.stringify({ keyName : element.key }));
                 }
               });
               if (flag === true) {
-                navigation.navigate("Init")
+                validation(true)
                 // saveRemember(true);
                 // saveRemember(true);
                 // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
@@ -163,7 +184,7 @@ const SiginScreen = ({ navigation }) => {
                   registerType: 'google',
                 };
                 AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
-                navigation.navigate("Init")
+                validation(true)
                 // saveRemember(true);
                 // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
                 // saveCategory(true);
@@ -269,7 +290,7 @@ const GetInformationFromToken = (accessToken) => {
                   }
                 });
                 if (flag === true) {
-                  navigation.navigate("Init")
+                  validation(true)
                   // saveRemember(true);
                   // saveRemember(true);
                   // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
@@ -291,7 +312,8 @@ const GetInformationFromToken = (accessToken) => {
                     registerType: 'facebook',
                   };
                   AsyncStorage.setItem("userinfo", JSON.stringify(asdas));
-                  navigation.navigate("Init")
+                  // navigation.navigate("Init")
+                  validation(true)
                   // saveRemember(true);
                   // props.navigation.navigate('Discover', {screenflag: 'Discover'});               
                   // saveCategory(true);
@@ -360,7 +382,7 @@ const GetInformationFromToken = (accessToken) => {
             <View style={{ alignItems: 'flex-end' }}>
               <TouchableOpacity
                 onPress={() => {
-                  props.navigation.navigate('Forget');
+                  navigation.navigate('Forget');
                 }}>
                 <Text style={styles.forgetTxt}>Forget Password?</Text>
               </TouchableOpacity>

@@ -6,9 +6,10 @@ import InitScreen from '../screens/InitScreen';
 import SiginScreen from '../screens/SiginScreen'
 import SignupScreen from '../screens/SignupScreen';
 import MobileSignin from '../screens/MobileSignin'
-
+import ForgetPassword from '../screens/ForgetPassword'
+import ForgetSuccess from '../screens/ForgetSuccess'
+// import Discover from '../screens/Discover'
 const RootStack = createStackNavigator();
-
 
 
 const RootStackScreen = ({ navigation }) => {
@@ -52,8 +53,35 @@ const RootStackScreen = ({ navigation }) => {
                     headerShown: false,
                 }}
             />
+              <RootStack.Screen
+                name="Forget"
+                component={ForgetPassword}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <RootStack.Screen
+                name="ForgetSucess"
+                component={ForgetSuccess}
+                options={{
+                    headerShown: false,
+                }}
+            />
+               {/* <RootStack.Screen
+                name="Discover"
+                component={Discover}
+                // options={{
+                //     headerShown: false,
+                // }}
+            /> */}
         </RootStack.Navigator>
+
+
+
     );
 }
+
+
+
 
 export default RootStackScreen;

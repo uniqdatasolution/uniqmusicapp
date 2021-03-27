@@ -20,6 +20,9 @@ class firebaseClass {
       callback(res);
     });
   }
+  updatePassword(key, val) {
+    db.ref(`users`).child(key).update({pass: val});
+  }
  
   updateUserData(key, val,val1,index,image) {
     db.ref(`users`).child(key).update({email: val,name :val1,gen:index,photo:image});

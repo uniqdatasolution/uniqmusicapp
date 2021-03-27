@@ -2,17 +2,23 @@ import React ,{useEffect} from 'react';
 import { Dimensions, StyleSheet, Platform, PixelRatio, View, Image, TouchableOpacity, Text } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { actuatedNormalizeH, scaleW, actuatedNormalizeW, scaleH ,width, height  } from '../screens/assets/layout/Dimension'
+import { actuatedNormalizeH, scaleW, actuatedNormalizeW, scaleH ,width, height  } from '../screens/assets/layout/Dimension';
+import { AuthContext } from '../Components/Context'
 const InitScreen = ({navigation}) => {
+  const { validation } = React.useContext(AuthContext);
   useEffect(() => {
     (async function () {
     var UserDataString = JSON.parse(await AsyncStorage.getItem('userinfo')) 
     console.log("jSONdATA---------------------------", UserDataString)
-    // if(UserDataString)
-    // {
-    //   navigation.navigate('Signin')
-    // }
-    //  console.log("useEffect", Firebase.auth().currentUser);
+    if(UserDataString)
+    {
+      validation(true)
+    }
+   else
+   {
+    validation(false)
+   }
+ 
     })()
   }, [])
   return (
